@@ -12,10 +12,7 @@ public class Main {
     {
         if(i < 0 && j < 0) return 1;
         if(j < 0 || j > i) return 0;
-        
-        
-        
-        
+       
         return pascal(i-1,j-1) + pascal(i-1,j);
     }
 
