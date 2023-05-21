@@ -9,11 +9,11 @@ public class Main {
         pas(row);
     }
     
-    static int pascal(int i,int j,HashMap cache)
+    static int pascal(int i,int j,HashMap<String,Integer> cache)
     {
         String index = i + "," +j;
         
-        if(cache.containsKey(index)) return ((Integer) cache.get(index)).intValue();
+        if(cache.containsKey(index)) return cache.get(index);
         if(i < 0 && j < 0) return 1;
         if(j < 0) return 0;
         if(j > i) return 0;
