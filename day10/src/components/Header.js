@@ -1,152 +1,133 @@
-import React, { useState ,useEffect} from 'react'
-import Navbarin from './Navbarin.js'
-import TopicCon from './TopicCon.js'
-import DraftCon from './DraftCon.js'
-import PlayCon from './PlayCon.js'
+import React, { useState } from 'react';
+import { MDBBtn } from 'mdb-react-ui-kit';
 import axios from 'axios';
 
 const Header = () => {
+  const [score, setScore] = useState(0);
 
+  const cl = (id) => {
+    if(questions[questionIndex].crt === id)
+    setScore(score + 10);
 
+  };
 
-    const[oldQuiz,updateOldQuiz] = useState([
-    ])
-    
-    const[ind,updateInd] = useState(0)
-    
-    const[questId,setQuestId] = useState(0)
-    
-    const[code,setCode] = useState(0)
-	const[name,setName] = useState('')
-    const codeGeneratorfn = async()=>{
-		const response = await axios.get("http://localhost:8080/addQuiz");
-		setCode(response.data)
-	}
-    
-  useEffect(() => {
-    const getRefs = async () =>{
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const questions = [
 
-      
+  
+  ];
 
-          const response = await axios.get("http://localhost:8080/getQuizRef",
-          
-          );
-          updateOldQuiz(response.data.map((doc) => ({
-			no:doc.no,
-			name:doc.name,
-			id:doc.id
-          })))
-    }
-    try
-    {
-		getRefs()
-    }
-    catch(e)
-    {
-      alert(e)
-    }
-    
-  },[])
-    
+  const onClickJoin = async() =>{
+        const response = await axios.get("http://localhost:8080/addUser/"+code+"/"+name);
+        
+        if(code === 33) {
+			
+			
+		}
 
-    const [questions,updateQuestions] = useState([
-     
-
-    ])
-
-    const [players,updatePlayers] = useState([
-
-])
-
-const [flag,setFlag] = useState(true)
-
-
-const goPlay = (id,namer) =>
-{
-    setFlag(false)
-    codeGeneratorfn(id)
-    setQuestId(id)
-    setName(namer)
-    playConStart()
-}
-
-const getHome = () => {
-    setFlag(true)
-}
-
-const [counter,setCounter] = useState(5000)
-
-const [question,updateQuestion] = useState({})
-
-
-const getQuestion = ()=> {
-	
-	console.log(ind,questions)
-	if(ind < questions.length){
-	const d ={
-	no: questions[ind].no,
-    quest: questions[ind].question,
-    ans1: questions[ind].ans1,
-    ans2: questions[ind].ans2,
-    ans3: questions[ind].ans3,
-    ans4: questions[ind].ans4,
-    crt: questions[ind].crt}
-    updateQuestion(d)
-    updateInd(ind+1)}
-	
-}
-
-const playConStart = async () => {
-  try {
-	  console.log(questId)
-    const response = await axios.get("http://localhost:8080/getQuestions/1" );
-    console.log(response.data);
-    const data = response.data.map((doc) => ({
-      no: doc.no,
-      quest: doc.question,
-      ans1: doc.ans1,
-      ans2: doc.ans2,
-      ans3: doc.ans3,
-      ans4: doc.ans4,
-      crt: doc.crt,
-    }));
-    updateQuestions(data);
-  } catch (error) {
-    console.error("Error fetching questions:", error);
+        response.data.map((doc) =>{
+            questions.push(doc)
+        })
   }
-};
+
+  const [code,updateCode] = useState(0)
+  const[name,updateName] = useState('')
 
 
+  const handleNextQuestion = () => {
+    if (questionIndex < questions.length - 1) {
+      setQuestionIndex(questionIndex + 1);
+    } else {
+      alert('Your score : '+score);
+    }
+  };
 
+  const currentQuestion = questions[questionIndex];
 
   return (
     <div>
-        <Navbarin getHome={getHome}/>
-    {flag && (
-      <>
-        
-        <TopicCon />
-        <DraftCon 
-        oldQuiz={oldQuiz} 
-        goPlay={goPlay}
-        />
-      </>
-    )}
-    {!flag && (
-      <>
-        <PlayCon 
-        question={questions}
-         players={players} 
-         counter={counter}
-         getHome={getHome}
-         code={code}
-         name={name}
-         getQuestion={getQuestion}
-         />
-      </>
-    )}
-  </div>
-  )
-}
+      <div className="input-group mb-3" style={{ width: '200px' }}>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Quiz Code"
+          aria-label="Username"
+          aria-describedby="basic-addon1"
+          value={code}
+          onChange={(e) => updateCode(e.target.value)}
 
-export default Header
+        />
+      </div>
+
+      <div className="input-group mb-3" style={{ width: '200px' }}>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="name"
+          aria-label="name"
+          aria-describedby="basic-addon1"
+          value={name}
+          onChange={(e) => updateName(e.target.value)}
+        />
+      </div>
+
+      <button type="button" className="btn btn-success" onClick={onClickJoin}>
+        Join
+      </button>
+
+      {questions.length > 0 ? (
+        <div key={currentQuestion.no}>
+          <div style={{ fontSize: '40px', marginTop: '40px', marginBottom: '30px' }}>
+            {currentQuestion.quest}
+          </div>
+          <div style={{ marginBottom: '30px' }}>
+            <MDBBtn
+              style={{ width: '200px' }}
+              color='success'
+              className="ms-2"
+              onClick={()=>{cl(1)}}
+            >
+              {currentQuestion.ans1}
+            </MDBBtn>
+            <MDBBtn
+              style={{ width: '200px' }}
+              color='success'
+              className="ms-2"
+              onClick={()=>{cl(2)}}
+            >
+              {currentQuestion.ans2}
+            </MDBBtn>
+          </div>
+          <div>
+            <MDBBtn
+              style={{ width: '200px' }}
+              color='success'
+              className="ms-2"
+              onClick={()=>{cl(3)}}
+            >
+              {currentQuestion.ans3}
+            </MDBBtn>
+            <MDBBtn
+              style={{ width: '200px' }}
+              color='success'
+              className="ms-2"
+              onClick={()=>{cl(4)}}
+            >
+              {currentQuestion.ans4}
+            </MDBBtn>
+          </div>
+        </div>
+      ) : (
+        <div>No questions available.</div>
+      )}
+
+      <button type="button" className="btn btn-primary mt-3" onClick={handleNextQuestion}>
+        Next
+      </button>
+
+      <div style={{ marginTop: '20px' }}>Score: {score}</div>
+    </div>
+  );
+};
+
+export default Header;
